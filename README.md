@@ -1,12 +1,13 @@
-# Perspective API Discord Bot
-Machine-Learning Discord Filter Bot powered by Google's Perspective API.
+# Perspective API / Tesseract Discord Bot
+Machine-Learning, OCR Discord Filter Bot powered by Google's Perspective API and tesseract.js.
 
 This is a **Complete Project**. This means you have node-modules pre-included. If you're a complete beginner, there will be instructions
 as to how to set this up. If you aren't, you *should* know what you have to change to make this bot power up (If not, keep reading).
 
 **REGARDLESS TO YOUR SKILL, PLEASE READ STEP 3. THIS IS IMPORTANT TO SET UP THE API PROPERLY (TRUST ME, ITS VERY DIFFICULT TO FIGURE OUT IF YOU DON'T HAVE INSTRUCTIONS.)**
+**IF YOU DON'T ALREADY HAVE TESSERACT SET UP, READ STEP 4.**
 
-**HEAD TO https://developers.perspectiveapi.com/s/about-the-api-faqs FOR QUESTIONS ABOUT THE API OR CONTACT `Jayleaf#1234` ON DISCORD FOR QUESTIONS ABOUT THE BOT.**
+**HEAD TO https://developers.perspectiveapi.com/s/about-the-api-faqs FOR QUESTIONS ABOUT PERSPECTIVE OR GO TO https://www.npmjs.com/package/node-tesseract-ocr FOR INFORMATION ABOUT THE TESSERACT NODE PACKAGE. YOU CAN CONTACT `Jayleaf#1234` ON DISCORD FOR QUESTIONS ABOUT THE BOT.**
 
 **STEP 1** 
 --
@@ -58,13 +59,38 @@ as to how to set this up. If you aren't, you *should* know what you have to chan
 - When you receive that email, either click the button or follow this link: https://console.developers.google.com/apis/library/commentanalyzer.googleapis.com
 - Enable the API.
 
-**That should be all you need to do to get this up and running. For configuration, continue reading.**
+**That should be all you need for the Perspective API filter. Now, we will move on to setting up Tesseract.**
+
+**STEP 4**
+--
+*Install Tesseract*
+
+- Navigate to https://github.com/UB-Mannheim/tesseract/wiki
+- Install the 64-bit version of Tesseract (Assuming you have a 64-bit OS.)
+- After you install Tesseract, you will need to add it to your PATH.
+*These are Windows instructions. If you are not running windows, do what you need to to install Tesseract and add it to your PATH.*
+- Head to Settings.
+- Click on "System".
+- Click on "About" in the side bar.
+- On the right-hand side, click "Advanced System Settings".
+- A new window will pop up. At the bottom of this window, click "Environment Variables".
+- Look in the System Variables menu, and scroll until you find a variable named "PATH", "Path", or "path".
+- Click "Edit".
+- Unselect your current selection (so that nothing is highlighted in blue), then click "New"
+- Then, Click "Browse".
+- Navigate to the directory in which you installed Tesseract.
+- Select the folder named "Tesseract-OCR".
+- Click Enter, then click OK at the bottom of the window to exit the menu.
+- Restart VSC or your command prompt.
+
+
+**That should be all you need to do to get the bot up and running. Move to Step 5 for optional steps.**
 
 
 **OPTIONAL**
 --
 
-**STEP 4**
+**STEP 5**
 --
 *Configure your hard filter*
 
@@ -75,7 +101,7 @@ as to how to set this up. If you aren't, you *should* know what you have to chan
 - Add whatever words you want in this array, making sure to follow the pre-existing example layout.
 
 
-**STEP 5**
+**STEP 5.1**
 --
 *Configure your API attributes*
 
@@ -88,6 +114,12 @@ as to how to set this up. If you aren't, you *should* know what you have to chan
 - Following the same format as the pre-existing array elements, add whatever new attributes you added in the attributeThresholds constant into this array.
 - Head down to line 102.
 - This is where you'll have to work your own magic. This has been pre-set up for 2 and primarily used for testing, but be creative. **PLEASE READ THE COMMENTS AT LINE 29 AND 30 FOR IDEAS ON HOW TO DO THIS IF YOU CAN'T DO IT YOURSELF.** This will only send a message. Here, you can choose what to do. The If statement at line 102 will check if there is one or more attributes that passed your threshold. Within this if statement is where you would put `message.delete()`, or whatever else you want to do when your filter trips. **DO NOT TOUCH LINE 110.** On Line 111, you can choose what happens to your user if they say a word that's hard-filtered.
+
+**Step 5.2**
+--
+*Repeat your edits.*
+
+- **Anything you did in Step 5.1 to the filter (i.e editing your scoreArray) you will have to do to the Tesseract code. Scroll to line 137 for that.**
 
 
 

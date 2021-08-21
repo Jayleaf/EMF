@@ -3,6 +3,7 @@ const intents = ["GUILDS", "GUILD_MESSAGES"];
 const client = new Client({intents: intents, ws:{intents: intents}});
 const { google } = require("googleapis")
 const { isFunction } = require("util");
+const tesseract = require("node-tesseract-ocr")
 
 client.on("ready", () => {
     console.log("Bot On")
@@ -55,7 +56,7 @@ client.on("messageCreate", message => {
     }
   
     const req = {
-      comment: {text: text.content},
+      comment: {text: text},
       languages: ['en'],
       requestedAttributes: requestedAttributes,
     };
@@ -79,8 +80,9 @@ client.on("messageCreate", message => {
   //
 
     client.on('messageCreate', async (message) => {
-        if (!message.guild || message.author.bot) return;               // make sure it's not a bot and in a guild
-        await analyzeText(message).then(results => {                    // calls the function
+        if (!message.guild || message.author.bot) return;   
+        if(!message.content) return;        // make sure it's not a bot and in a guild
+        await analyzeText(message.content).then(results => {                    // calls the function
         results = Object.values(results)                                // gets the values of the results object
         console.log(results)
         var scoreArray = [                                                 //
@@ -112,8 +114,48 @@ client.on("messageCreate", message => {
        } else {
            console.log("Nothing.")
        }
+      
     })
     })
 
 
-client.login("TOKEN HERE")
+    const config = {
+      lang: "eng",
+      oem: 1,
+      psm: 3,
+    }
+
+    client.on('messageCreate', async message => {
+      if(message.attachments.size > 0) {
+        message.attachments.forEach(attachment => {
+          const ImageLink = attachment.proxyURL;
+          tesseract
+            .recognize(ImageLink, config).then(async results => {
+              var text = results
+              await analyzeText(text).then(result => {
+                result = Object.values(result)
+                var scoreArray = [                                                 
+                  {name: "Toxicity", value: result[0]},                        
+                  {name: "Insult", value: result[1]},                           
+                ]
+                var positiveArrays = []                                            
+                var thresholdArray = Object.values(attributeThresholds)            
+                for (i=0; i < scoreArray.length; i++) {                            
+                  if(scoreArray[i].value > thresholdArray[i]) {                  
+                  positiveArrays.push(scoreArray[i])                     
+               }
+              }
+              if(positiveArrays.length > 0) {
+                message.channel.send("Filtered your image.")
+                message.delete()
+              }else if(HardFilter.some(w => `${message.content.toLowerCase()}`.includes(`${w}`))) {
+                message.channel.send("Your message was filtered! It contained a hard-filtered word.")   
+              }
+            }).catch(error => {
+              console.log(error)
+            })
+          })
+        })
+      }
+    })
+client.login("YOUR TOKEN HERE")
